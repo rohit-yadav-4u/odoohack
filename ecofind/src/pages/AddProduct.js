@@ -56,14 +56,24 @@ export default function AddProduct() {
           required
           className="w-full p-2 border rounded"
         />
-        <input
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-          className="w-full p-2 border rounded"
-        />
+        <select
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+  className="p-2 border rounded w-full"
+  required
+>
+  <option value="">Select Category</option>
+  <option value="Electronics">Electronics</option>
+  <option value="Clothing">Clothing</option>
+  <option value="Books">Books</option>
+  <option value="Home & Kitchen">Home & Kitchen</option>
+  <option value="Sports">Sports</option>
+  <option value="Beauty">Beauty</option>
+  <option value="Toys">Toys</option>
+  <option value="Furniture">Furniture</option>
+  <option value="Groceries">Groceries</option>
+</select>
+
         <input
           type="text"
           placeholder="Image URL (optional)"

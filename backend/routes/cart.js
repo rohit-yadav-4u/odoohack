@@ -1,40 +1,29 @@
-const router = require("express").Router();
-const Cart = require("../models/Cart");
-const Product = require("../models/Product");
-
-// GET cart items for user
-router.get("/", async (req, res) => {
+// Add to cart
+router.post("/cart/add", async (req, res) => {
+  const { userId, productId } = req.body;
   try {
-    const filter = {};
-    if (req.query.user) filter.user = req.query.user;
+    let cart = await Cart.findOne({ userId });
+    if (!cart) {
+      cart = new Cart({ userId, products: [] });
+    }
+    const existing = cart.products.find(p => p.productId == productId);
+    if (existing) existing.quantity += 1;
+    else cart.products.push({ productId, quantity: 1 });
 
-    const cartItems = await Cart.find(filter).populate("product");
-    res.json(cartItems);
+    await cart.save();
+    res.status(200).json(cart); // Send back the updated cart
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
-// ADD item to cart
-router.post("/add", async (req, res) => {
+// Get user cart
+router.get("/cart/:userId", async (req, res) => {
   try {
-    const { user, product } = req.body;
-    const cartItem = new Cart({ user: user.id, product: product._id });
-    const saved = await cartItem.save();
-    res.status(201).json(saved);
+    const cart = await Cart.findOne({ userId: req.params.userId }).populate("products.productId");
+    if (!cart) return res.status(404).json({ msg: "Cart not found" });
+    res.status(200).json(cart);
   } catch (err) {
     res.status(500).json(err);
   }
 });
-
-// DELETE item from cart
-router.delete("/:id", async (req, res) => {
-  try {
-    await Cart.findByIdAndDelete(req.params.id);
-    res.json({ msg: "Removed from cart" });
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-
-module.exports = router;

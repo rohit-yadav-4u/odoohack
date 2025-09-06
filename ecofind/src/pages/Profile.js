@@ -1,58 +1,164 @@
-// src/pages/Profile.js
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
-export default function Profile() {
+export default function Profile({ onLogout, onGoToListings, onGoToCart }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem("Token");
-      const res = await axios.get("http://localhost:5000/api/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser(res.data);
-    } catch (err) {
-      console.error("Failed to fetch profile:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("Token");
-    localStorage.removeItem("userId");
-    window.location.href = "/login";
-  };
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    dob: "",
+    phone: "",
+    address: "",
+  });
 
   useEffect(() => {
-    fetchProfile();
+    const userId = localStorage.getItem("userId");
+    const username = localStorage.getItem("username");
+    const email = localStorage.getItem("email");
+
+    if (userId && username && email) {
+      setUser({ id: userId, username, email });
+      setFormData({ ...formData, username, email });
+    }
+    // eslint-disable-next-line
   }, []);
 
-  if (loading) return <p className="text-center">Loading profile...</p>;
+  if (!user) {
+    return <p className="text-center">No user data found. Please log in.</p>;
+  }
 
-  if (!user) return <p className="text-center">No profile data available.</p>;
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = () => {
+    setUser({ ...user, ...formData });
+    localStorage.setItem("username", formData.username);
+    localStorage.setItem("email", formData.email);
+    setEditMode(false);
+    alert("Profile updated Successfully!");
+  };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
-      <h1 className="text-2xl font-bold mb-4">My Profile</h1>
-      <p className="mb-2">
-        <strong>Username:</strong> {user.username}
-      </p>
-      <p className="mb-2">
-        <strong>Email:</strong> {user.email}
-      </p>
-      <p className="mb-4">
-        <strong>User ID:</strong> {user.id}
-      </p>
+    <div className="max-w-md mx-auto p-6 bg-white shadow rounded mt-6">
+      <h2 className="text-2xl font-bold text-green-600 mb-4">My Profile</h2>
 
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-      >
-        Logout
-      </button>
+      {/* Profile Image */}
+      <div className="flex justify-center mb-4">
+        <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+          {user.username.charAt(0).toUpperCase()}
+        </div>
+      </div>
+
+      {/* User Info */}
+      <div className="space-y-3">
+        <div>
+          <span className="font-semibold">Username:</span>{" "}
+          {editMode ? (
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="border p-1 rounded w-full"
+            />
+          ) : (
+            user.username
+          )}
+        </div>
+
+        <div>
+          <span className="font-semibold">Email:</span>{" "}
+          {editMode ? (
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="border p-1 rounded w-full"
+            />
+          ) : (
+            user.email
+          )}
+        </div>
+
+        <div>
+          <span className="font-semibold">Date of Birth:</span>{" "}
+          {editMode ? (
+            <input
+              type="date"
+              name="dob"
+              value={formData.dob}
+              onChange={handleChange}
+              className="border p-1 rounded w-full"
+            />
+          ) : (
+            formData.dob || "—"
+          )}
+        </div>
+
+        <div>
+          <span className="font-semibold">Phone:</span>{" "}
+          {editMode ? (
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className="border p-1 rounded w-full"
+            />
+          ) : (
+            formData.phone || "—"
+          )}
+        </div>
+
+        <div>
+          <span className="font-semibold">Address:</span>{" "}
+          {editMode ? (
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="border p-1 rounded w-full"
+            />
+          ) : (
+            formData.address || "—"
+          )}
+        </div>
+
+        <div>
+          <span className="font-semibold">User ID:</span> {user.id}
+        </div>
+      </div>
+
+      {/* Edit/Save Buttons */}
+      <div className="mt-4 flex gap-2">
+        {editMode ? (
+          <>
+            <button
+              onClick={handleSave}
+              className="bg-green-500 text-white px-3 py-1 rounded"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setEditMode(false)}
+              className="bg-gray-300 px-3 py-1 rounded"
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => setEditMode(true)}
+            className="bg-blue-500 text-white px-3 py-1 rounded"
+          >
+            Edit Profile
+          </button>
+        )}
+      </div>
+
+  
     </div>
   );
 }
