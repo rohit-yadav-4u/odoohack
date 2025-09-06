@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ export default function Dashboard() {
   };
 
   return (
+    <>
+    <Navbar/>
+{/* 
     <div className="p-8 bg-green-50 min-h-screen">
       <h1 className="text-2xl font-bold text-black">Welcome, {user?.username}</h1>
       <button
@@ -27,6 +31,7 @@ export default function Dashboard() {
       >
         Logout
       </button>
-    </div>
+    </div> */}
+    </>
   );
 }
