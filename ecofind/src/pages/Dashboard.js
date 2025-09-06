@@ -14,10 +14,18 @@ export default function Dashboard() {
     setUser({ username: "Demo User" });
   }, [navigate]);
 
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   navigate("/");
+  // };
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
+  // Clear auth/session data
+  localStorage.removeItem("authToken");
+
+  // Redirect to login (replace history so back button won’t return)
+  navigate("/login", { replace: true });
+};
+
 
   return (
     <>
