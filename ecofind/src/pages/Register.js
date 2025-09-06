@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import "./Login.css";
 import logo from "./Logo.png";
+import "./Login.css";
 
-export default function Register() {
-  const navigate = useNavigate();
+export default function Register({ onRegister }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,8 +22,10 @@ export default function Register() {
         googleId: userObject.sub,
       });
 
-      localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
+      localStorage.setItem("Token", res.data.token);
+      localStorage.setItem("userId", res.data.userId);
+
+      onRegister(); // Notify App.js to log in user
     } catch (error) {
       console.error("Google registration error:", error);
       alert("Google registration failed. Try again.");
@@ -57,7 +57,7 @@ export default function Register() {
         password,
       });
       alert("Registration successful!");
-      navigate("/");
+      onRegister(); // Notify App.js to go to dashboard/login
     } catch (err) {
       alert(err.response?.data?.msg || "Registration failed");
     }
@@ -134,26 +134,17 @@ export default function Register() {
 
         {/* Link to login */}
         <div className="form-links">
-          <p>
-            <span style={{ color: "white" }}>Already have an account? </span>
-            <Link to="/" style={{ color: "#46c60b" }}>
+          <p style={{ color: "white", marginTop: "15px" }}>
+            Already have an account?{" "}
+            <span
+              style={{ color: "#46c60b", cursor: "pointer" }}
+              onClick={onRegister} // Go back to login
+            >
               Login
-            </Link>
+            </span>
           </p>
         </div>
       </form>
-
-      {/* <footer className="footer">
-        <div className="footer-links">
-          <a href="#">About Us</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms Of Use</a>
-        </div>
-        <div className="footer-copy">
-          © 2025 Indian Art. All Rights Reserved | Design By{" "}
-          <span className="designer">W3layouts</span>
-        </div>
-      </footer> */}
     </div>
   );
 }

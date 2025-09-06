@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
-import './Login.css';
-import logo from './Logo.png';
+import React, { useState } from "react";
+import axios from "axios";
+import logo from "./Logo.png";
+import "./Login.css";
 
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+export default function Login({ onLogin, onCreate }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,16 +15,14 @@ export default function Login() {
         password,
       });
 
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("Token", res.data.token);
+      localStorage.setItem("userId", res.data.userId);
+
       alert("Login successful!");
-      navigate("/dashboard");
+      onLogin(); // Notify App.js
     } catch (err) {
       alert(err.response?.data?.msg || "Login failed");
     }
-  };
-
-  const create = () => {
-    navigate('/register');
   };
 
   return (
@@ -40,7 +36,7 @@ export default function Login() {
           <i className="fas fa-user"></i>
           <input
             type="email"
-            placeholder="Username"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -61,30 +57,25 @@ export default function Login() {
         </div>
 
         <div className="centered-login">
-          <button type="submit" className="login-btn-wide">LOG IN</button>
+          <button type="submit" className="login-btn-wide">
+            LOG IN
+          </button>
         </div>
 
         <div className="form-links">
-          <Link to="/forgetpassword">Forgot password?</Link>
+          <a href="/forgetpassword">Forgot password?</a>
         </div>
 
         <div className="centered-login">
-          <button type="button" className="login-btn-wide create" onClick={create}>
+          <button
+            type="button"
+            className="login-btn-wide create"
+            onClick={onCreate} // go to register
+          >
             Create new account
           </button>
         </div>
       </form>
-
-      {/* <footer className="footer">
-        <div className="footer-links">
-          <a href="#">About Us</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms Of Use</a>
-        </div>
-        <div className="footer-copy">
-          © 2025 Indian Art. All Rights Reserved | Design By <span className="designer">W3layouts</span>
-        </div>
-      </footer> */}
     </div>
   );
 }

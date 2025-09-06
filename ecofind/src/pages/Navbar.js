@@ -29,7 +29,7 @@ const Sidebar = () => {
     setShowLogoutConfirm(false);
 
     // Clear any auth/session data if needed
-    localStorage.removeItem("authToken"); 
+    localStorage.removeItem("Token"); 
 
     // Redirect to login
     navigate("/");
