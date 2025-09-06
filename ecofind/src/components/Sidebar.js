@@ -14,7 +14,6 @@ export default function Sidebar({ activePage, setActivePage, onLogout }) {
     { id: "sell", label: "Sell Item", icon: <PlusSquare size={20} /> },
     { id: "listings", label: "My Listings", icon: <List size={20} /> },
     { id: "wishlist", label: "Saved Items", icon: <Heart size={20} /> },
-    { id: "messages", label: "Messages", icon: <MessageSquare size={20} /> },
     { id: "orders", label: "Orders", icon: <Package size={20} /> },
     { id: "profile", label: "Profile & Settings", icon: <User size={20} /> },
     { id: "about", label: "About / Mission", icon: <Info size={20} /> },

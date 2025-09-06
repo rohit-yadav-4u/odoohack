@@ -7,10 +7,9 @@ export default function MyListings() {
 
   const fetchProducts = async () => {
     try {
-      const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("Token");
 
-      const res = await axios.get(`http://localhost:5000/api/products?userId=${userId}`, {
+      const res = await axios.get("http://localhost:5000/api/products/mine", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

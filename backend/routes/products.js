@@ -19,55 +19,62 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// GET products for logged-in user
-router.get("/", verifyToken, async (req, res) => {
+// ✅ GET all products (public dashboard)
+router.get("/", async (req, res) => {
+  try {
+    const products = await Product.find().populate("seller", "username email");
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ msg: "Failed to fetch products" });
+  }
+});
+
+// ✅ GET my products (private)
+router.get("/mine", verifyToken, async (req, res) => {
   try {
     const products = await Product.find({ seller: req.userId });
     res.json(products);
   } catch (err) {
-    res.status(500).json({ msg: "Failed to fetch products", error: err.message });
+    res.status(500).json({ msg: "Failed to fetch your products" });
   }
 });
 
-// POST new product
+// ✅ POST new product
 router.post("/", verifyToken, async (req, res) => {
   try {
     const { title, price, description, category, image } = req.body;
-
-    if (!title || !price || !description || !category) {
-      return res.status(400).json({ msg: "All required fields must be filled" });
-    }
 
     const newProduct = new Product({
       title,
       price,
       description,
       category,
-      image: image || "",
+      image,
       seller: req.userId,
       status: "active",
     });
 
-    const savedProduct = await newProduct.save();
-    res.status(201).json(savedProduct);
+    const saved = await newProduct.save();
+    res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ msg: "Failed to add product", error: err.message });
+    console.error("Error adding product:", err);
+    res.status(500).json({ msg: "Failed to add product" });
   }
 });
 
-// DELETE a product
+// ✅ DELETE product
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ msg: "Product not found" });
 
-    if (product.seller.toString() !== req.userId)
+    if (!product) return res.status(404).json({ msg: "Product not found" });
+    if (String(product.seller) !== req.userId)
       return res.status(403).json({ msg: "Unauthorized" });
 
     await Product.findByIdAndDelete(req.params.id);
     res.json({ msg: "Deleted successfully" });
   } catch (err) {
-    res.status(500).json({ msg: "Failed to delete product", error: err.message });
+    res.status(500).json({ msg: "Failed to delete product" });
   }
 });
 

@@ -7,12 +7,13 @@ import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import About from "./pages/About";      // ✅ import
+import Profile from "./pages/Profile";  // ✅ import
 
 export default function App() {
   const [activePage, setActivePage] = useState("dashboard");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Check localStorage for token on mount
   useEffect(() => {
     const token = localStorage.getItem("Token");
     if (token) setIsLoggedIn(true);
@@ -26,7 +27,6 @@ export default function App() {
   };
 
   const renderPage = () => {
-    // If not logged in, render full-screen login/register
     if (!isLoggedIn) {
       if (activePage === "register") {
         return <Register onRegister={() => setActivePage("dashboard")} />;
@@ -40,7 +40,6 @@ export default function App() {
       }
     }
 
-    // If logged in, render pages normally
     switch (activePage) {
       case "dashboard":
       case "browse":
@@ -53,6 +52,10 @@ export default function App() {
         return <Cart />;
       case "orders":
         return <Orders />;
+      case "about":         // ✅ new
+        return <About />;
+      case "profile":       // ✅ new
+        return <Profile />;
       default:
         return <Dashboard />;
     }
