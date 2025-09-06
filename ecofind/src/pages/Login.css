@@ -9,6 +9,7 @@
   padding-top: 60px; /* Match navbar height */
   box-sizing: border-box;
   position: relative;
+  width: 100vw;
 }
 
 /* Dark transparent overlay */
